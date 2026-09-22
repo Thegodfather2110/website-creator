@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Core\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Models\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Services\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Renderers\" -Force)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Validators\" -Force)",
+      "Bash(mkdir -p api/pages api/projects)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\MY PC\\god\\creations\\website creator",
+      "C:\\Users\\MY PC\\god\\creations\\website creator\\api"
+    ]
+  }
+}

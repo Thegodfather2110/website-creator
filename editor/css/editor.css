@@ -1,0 +1,18 @@
+/* editor/css/editor.css */
+#editor-container {
+    display: flex;
+    height: 100vh;
+}
+#sidebar-left, #sidebar-right {
+    width: 250px;
+    background: #f4f4f4;
+    padding: 10px;
+}
+#canvas {
+    flex: 1;
+    overflow: auto;
+    border: 1px solid #ccc;
+}
+.node {
+    margin: 5px;
+}
