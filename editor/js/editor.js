@@ -1,7 +1,8 @@
 import { CanvasRenderer } from './CanvasRenderer.js';
 import { NodeTree } from './NodeTree.js';
 import { Inspector } from '../inspector/Inspector.js';
-import { getResponsiveStyle } from './Responsive.js';
+import { HistoryManager } from '../history/HistoryManager.js';
+import { UpdateNodeCommand } from '../history/commands/UpdateNodeCommand.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('canvas');
@@ -33,17 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tree = new NodeTree(initialData);
     const renderer = new CanvasRenderer(canvasElement);
+    const history = new HistoryManager();
 
-    // We update the inspector to trigger render with current breakpoint
-    const onUpdate = () => {
-        const bp = inspector.activeBreakpoint;
-        renderer.render(tree.data, bp);
+    // Inspector callback now uses HistoryManager
+    const onNodeUpdate = (nodeId, newProps) => {
+        const command = new UpdateNodeCommand(tree, nodeId, newProps);
+        history.execute(command);
+        renderer.render(tree.data, inspector.activeBreakpoint);
     };
 
-    const inspector = new Inspector(inspectorElement, tree, onUpdate);
+    const inspector = new Inspector(inspectorElement, tree, onNodeUpdate);
 
     // Initial render
     renderer.render(tree.data, 'desktop');
+
+    // Add Undo/Redo buttons
+    const undoBtn = document.createElement('button');
+    undoBtn.textContent = 'Undo';
+    undoBtn.onclick = () => { history.undo(); renderer.render(tree.data, inspector.activeBreakpoint); };
+    document.body.appendChild(undoBtn);
 
     canvasElement.addEventListener('click', (e) => {
         const nodeId = e.target.dataset.id;
@@ -52,5 +61,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    console.log("Editor initialized");
+    console.log("Editor initialized with History Engine");
 });

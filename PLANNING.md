@@ -1,20 +1,20 @@
-# Phase 3: Styling Engine Implementation Plan
+# Phase 6: History & Versioning Implementation Plan
 
-Implementation of the Styling Engine for the Website Creator Engine.
+Implementation of the History Engine for the Website Creator Engine.
 
 ## 1. Objectives
-Extend the Inspector and Renderer to support:
-- Typography: font family, size, weight, line-height.
-- Appearance: colors (background, text), borders (radius, width, color).
-- Advanced: shadows, opacity.
+- Implement robust undo/redo capabilities using the Command Pattern.
+- Enable state snapshotting for versioning.
+- Ensure mutation atomicity as per Section 20 of the documentation.
 
 ## 2. Approach
-- **Global Theme Tokens**: Start by defining a simple token structure in the `editor/js/editor.js` initially, then expand.
-- **Inspector Updates**: Update `editor/js/components/Inspector.js` to create input fields for these new properties.
-- **Renderer Updates**: Update `editor/js/CanvasRenderer.js` to map these JSON properties into CSS styles applied to elements.
+- **Command Structure**: Implement a base `Command` class for all document mutations.
+- **History Manager**: Create `editor/history/HistoryManager.js` to manage the undo/redo stacks.
+- **Atomic Operations**: Refactor `NodeTree.js` to use commands rather than direct object manipulation.
 
 ## 3. Implementation Steps:
-1.  **Update Document Model structure**: Ensure `styles` in the node definition can store these new properties.
-2.  **Update `CanvasRenderer.js`**: Expand the `_createNodeElement` method (or helper) to map JSON style keys to CSS style properties.
-3.  **Update `Inspector.js`**: Add UI controls (color pickers, text inputs) for typography and appearance.
-4.  **Integration**: Ensure updates in the Inspector correctly mutate the `styles` object in the NodeTree, triggering the re-render.
+1.  **Command Pattern**: Implement `editor/history/Command.js` to define execute()/undo() interfaces.
+2.  **Specific Commands**: Build `editor/history/commands/` (e.g., `UpdateNodeCommand.js`).
+3.  **History Manager**: Implement `HistoryManager.js` to track stack state.
+4.  **UI/Interaction**: Integrate Undo/Redo buttons into the editor toolbar.
+5.  **Integration**: Ensure `NodeTree.js` interacts with the `HistoryManager` when mutations occur.

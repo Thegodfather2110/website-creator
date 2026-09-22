@@ -5,8 +5,20 @@ export class NodeTree {
     }
 
     findNode(id) {
-        // Recursive search for a node by ID
         return this._search(this.data.pages, id);
+    }
+
+    findNodeWithParent(id, nodes = this.data.pages, parentId = null, index = -1) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].id === id) {
+                return { node: nodes[i], parentId, index: i };
+            }
+            if (nodes[i].children) {
+                const found = this.findNodeWithParent(id, nodes[i].children, nodes[i].id, i);
+                if (found) return found;
+            }
+        }
+        return null;
     }
 
     _search(nodes, id) {
@@ -25,6 +37,31 @@ export class NodeTree {
         if (node) {
             Object.assign(node, props);
             return true;
+        }
+        return false;
+    }
+
+    addNode(parentId, newNode) {
+        const parent = this.findNode(parentId);
+        if (parent) {
+            if (!parent.children) parent.children = [];
+            parent.children.push(newNode);
+        }
+    }
+
+    deleteNode(id) {
+        this._deleteRecursive(this.data.pages, id);
+    }
+
+    _deleteRecursive(nodes, id) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].id === id) {
+                nodes.splice(i, 1);
+                return true;
+            }
+            if (nodes[i].children) {
+                if (this._deleteRecursive(nodes[i].children, id)) return true;
+            }
         }
         return false;
     }

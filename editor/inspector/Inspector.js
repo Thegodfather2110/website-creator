@@ -1,12 +1,12 @@
-// Inspector.js - Inspector panel with Breakpoint support
+// Inspector.js - Inspector panel with Breakpoint support and Command Integration
 import { DesignTokens } from '../Tokens.js';
 
 export class Inspector {
-    constructor(container, tree, onUpdateCallback) {
+    constructor(container, tree, onNodeUpdateCallback) {
         this.container = container;
         this.tree = tree;
         this.selectedId = null;
-        this.onUpdateCallback = onUpdateCallback;
+        this.onNodeUpdateCallback = onNodeUpdateCallback; // Now expects (nodeId, newProps)
         this.activeBreakpoint = 'desktop'; // Default breakpoint
     }
 
@@ -69,16 +69,21 @@ export class Inspector {
         document.getElementById('save-node').addEventListener('click', () => {
             const newContent = document.getElementById('content-input').value;
 
-            // Update node content and specific breakpoint styles
-            node.content = newContent;
-            node.styles[this.activeBreakpoint] = {
+            const newStyles = { ...node.styles };
+            newStyles[this.activeBreakpoint] = {
                 display: document.getElementById('display-input').value,
                 padding: document.getElementById('padding-input').value,
                 color: document.getElementById('color-input').value,
                 backgroundColor: document.getElementById('bg-input').value
             };
 
-            if (this.onUpdateCallback) this.onUpdateCallback();
+            // Call callback with nodeId and ALL new properties (content + updated styles)
+            if (this.onNodeUpdateCallback) {
+                this.onNodeUpdateCallback(this.selectedId, {
+                    content: newContent,
+                    styles: newStyles
+                });
+            }
         });
     }
 }
