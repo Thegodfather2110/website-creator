@@ -8,15 +8,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
+$username = $input['username'] ?? '';
 $email = $input['email'] ?? '';
 $password = $input['password'] ?? '';
 
-if (empty($email) || empty($password)) {
-    ApiResponse::error('Email and password are required');
+if (empty($username) || empty($email) || empty($password)) {
+    ApiResponse::error('Username, email, and password are required');
 }
 
 try {
-    if (Auth::register($email, $password)) {
+    if (Auth::register($username, $email, $password)) {
         ApiResponse::success(['message' => 'User registered successfully'], 201);
     } else {
         ApiResponse::error('Registration failed');

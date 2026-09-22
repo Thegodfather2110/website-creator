@@ -1,28 +1,18 @@
-# Phase 11: Collaboration Implementation Plan
-
-Implementation of Collaboration features for the Website Creator Engine (Section 24).
+# Phase 1: Foundation Remediation Plan - Remediation according to WEBSITE_CREATOR_REMEDIATION_PLAN.md
 
 ## 1. Objectives
-- Support project sharing (inviting collaborators).
-- Enable node-specific comments for design review.
-- Implement basic role-based access control (RBAC).
+- Separate HTML page bootstrapping from API bootstrapping.
+- Simplify autoloader usage and centralize application setup.
+- Rename/Fix SQL schema file name.
+- Centralize session management.
 
 ## 2. Approach
-- **Backend Service**: `app/Services/CollaborationService.php` for handling project membership, and `app/Services/CommentService.php` for threaded comments.
-- **Database**: 
-    - `project_members`: Define roles (Owner, Editor, Viewer).
-    - `comments`: Annotate nodes (`page_id`, `node_id`, `user_id`, `content`).
-- **Interaction**: UI panels for "Collaborators" management and "Comments/Review" mode.
+- **Bootstrap Consolidation**: Extract autoloader, session init, and database setup to `app/bootstrap.php`.
+- **API Initialization**: Update `api/init.php` to use `app/bootstrap.php` and only add JSON headers when serving API requests.
+- **Session Service**: Implement `App\Core\Session` to encapsulate session operations.
 
 ## 3. Implementation Steps:
-1.  **Database Migration**:
-    - Add `project_members` and `comments` tables.
-2.  **Backend Services**:
-    - Build `app/Services/CollaborationService.php` (invite, list, remove members).
-    - Build `app/Services/CommentService.php` (CRUD for comments linked to nodes).
-3.  **API Layer**:
-    - Create `api/projects/{id}/collaborators` and `api/pages/{id}/comments`.
-4.  **UI/Tooling**:
-    - Add UI to the Editor to view and add comments to specific canvas nodes.
-5.  **Security**:
-    - Ensure `Auth::isLoggedIn()` and Project ownership checks are enforced on all collaboration API endpoints.
+1.  **Refactor `api/init.php`**: Remove hardcoded requirements, require `app/bootstrap.php`.
+2.  **Rename `shcema.sql`**: Execute file rename via bash.
+3.  **Implement `App\Core\Session`**: Standardize `start()`, `regenerate()`, `destroy()`, `login()`, `logout()`.
+4.  **Cleanup**: Verify all pages (`public/*.php`) now include the correct bootstrap.

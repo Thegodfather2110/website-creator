@@ -1,11 +1,11 @@
 <?php
-// Common API initialization for JSON responses
+// api/init.php - API Initialization
+// This file is ONLY called by API endpoints requiring JSON responses.
+
 header('Content-Type: application/json');
 
-// Autoloader/Setup (assuming simple approach for now)
-require_once __DIR__ . '/../app/Core/Database.php';
-require_once __DIR__ . '/../app/Core/Auth.php';
-require_once __DIR__ . '/../app/Core/ApiResponse.php';
+// Include global application bootstrap
+require_once __DIR__ . '/../app/bootstrap.php';
 
 function sendResponse(bool $success, string $message, array $data = []) {
     echo json_encode([
