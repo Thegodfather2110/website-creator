@@ -1,13 +1,9 @@
 <?php
 // api/init.php - API Initialization
-// This file is ONLY called by API endpoints requiring JSON responses.
-
-header('Content-Type: application/json');
-
-// Include global application bootstrap
 require_once __DIR__ . '/../app/bootstrap.php';
 
 function sendResponse(bool $success, string $message, array $data = []) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => $success,
         'message' => $message,

@@ -6,7 +6,9 @@
       "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Services\" -Force)",
       "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Renderers\" -Force)",
       "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Validators\" -Force)",
-      "Bash(mkdir -p api/pages api/projects)"
+      "Bash(mkdir -p api/pages api/projects)",
+      "Bash(php -l app/Core/Auth.php)",
+      "Bash(php -l api/auth/register.php)"
     ],
     "additionalDirectories": [
       "c:\\Users\\MY PC\\god\\creations\\website creator",

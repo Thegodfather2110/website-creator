@@ -141,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCurrent();
         }
 
-        if (action === 'save') {
-            await savePage();
+        if (action === 'publish') {
+            alert('Publishing functionality is under development.');
         }
     });
 
