@@ -1,20 +1,28 @@
-# Phase 6: History & Versioning Implementation Plan
+# Phase 11: Collaboration Implementation Plan
 
-Implementation of the History Engine for the Website Creator Engine.
+Implementation of Collaboration features for the Website Creator Engine (Section 24).
 
 ## 1. Objectives
-- Implement robust undo/redo capabilities using the Command Pattern.
-- Enable state snapshotting for versioning.
-- Ensure mutation atomicity as per Section 20 of the documentation.
+- Support project sharing (inviting collaborators).
+- Enable node-specific comments for design review.
+- Implement basic role-based access control (RBAC).
 
 ## 2. Approach
-- **Command Structure**: Implement a base `Command` class for all document mutations.
-- **History Manager**: Create `editor/history/HistoryManager.js` to manage the undo/redo stacks.
-- **Atomic Operations**: Refactor `NodeTree.js` to use commands rather than direct object manipulation.
+- **Backend Service**: `app/Services/CollaborationService.php` for handling project membership, and `app/Services/CommentService.php` for threaded comments.
+- **Database**: 
+    - `project_members`: Define roles (Owner, Editor, Viewer).
+    - `comments`: Annotate nodes (`page_id`, `node_id`, `user_id`, `content`).
+- **Interaction**: UI panels for "Collaborators" management and "Comments/Review" mode.
 
 ## 3. Implementation Steps:
-1.  **Command Pattern**: Implement `editor/history/Command.js` to define execute()/undo() interfaces.
-2.  **Specific Commands**: Build `editor/history/commands/` (e.g., `UpdateNodeCommand.js`).
-3.  **History Manager**: Implement `HistoryManager.js` to track stack state.
-4.  **UI/Interaction**: Integrate Undo/Redo buttons into the editor toolbar.
-5.  **Integration**: Ensure `NodeTree.js` interacts with the `HistoryManager` when mutations occur.
+1.  **Database Migration**:
+    - Add `project_members` and `comments` tables.
+2.  **Backend Services**:
+    - Build `app/Services/CollaborationService.php` (invite, list, remove members).
+    - Build `app/Services/CommentService.php` (CRUD for comments linked to nodes).
+3.  **API Layer**:
+    - Create `api/projects/{id}/collaborators` and `api/pages/{id}/comments`.
+4.  **UI/Tooling**:
+    - Add UI to the Editor to view and add comments to specific canvas nodes.
+5.  **Security**:
+    - Ensure `Auth::isLoggedIn()` and Project ownership checks are enforced on all collaboration API endpoints.

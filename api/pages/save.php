@@ -13,18 +13,24 @@ if (!Auth::isLoggedIn()) {
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
-$pageId = $input['id'] ?? null;
-$documentJson = $input['document_json'] ?? null;
+if (empty($input)) {
+    $input = $_POST;
+}
 
-if (!$pageId || !$documentJson) {
+$pageId = $input['id'] ?? $input['page_id'] ?? null;
+$documentJson = $input['document_json'] ?? $input['document'] ?? null;
+
+if (!$pageId || $documentJson === null) {
     ApiResponse::error('Page ID and document JSON are required', 400);
 }
 
 try {
     $db = Database::getConnection();
-    $stmt = $db->prepare("UPDATE pages SET document_json = ? WHERE id = ?");
-    if ($stmt->execute([json_encode($documentJson), $pageId])) {
-        ApiResponse::success(['message' => 'Page saved successfully']);
+    $encoded = is_string($documentJson) ? $documentJson : json_encode($documentJson);
+    $stmt = $db->prepare("UPDATE pages SET document_json = ?, updated_at = NOW() WHERE id = ?");
+
+    if ($stmt->execute([$encoded, (int)$pageId])) {
+        ApiResponse::success(['message' => 'Page saved successfully', 'id' => (int)$pageId]);
     } else {
         ApiResponse::error('Failed to save page');
     }
