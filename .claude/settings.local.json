@@ -8,7 +8,8 @@
       "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\MY PC\\\\god\\\\creations\\\\website creator\\\\app\\\\Validators\" -Force)",
       "Bash(mkdir -p api/pages api/projects)",
       "Bash(php -l app/Core/Auth.php)",
-      "Bash(php -l api/auth/register.php)"
+      "Bash(php -l api/auth/register.php)",
+      "Bash(grep -A 10 \"CREATE TABLE \\\\`users\\\\`\" schema.sql)"
     ],
     "additionalDirectories": [
       "c:\\Users\\MY PC\\god\\creations\\website creator",

@@ -18,12 +18,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// 3. Session Initialization
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// 4. URL Helper
+// 3. URL Helper
 function url(string $path = ''): string {
     // Assuming project root is absolute, can be updated via ENV variable later
     return '/' . ltrim($path, '/');

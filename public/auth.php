@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../api/init.php';
+require_once __DIR__ . "/../app/bootstrap.php";
 use App\Core\Auth;
 
 if (Auth::isLoggedIn()) {
@@ -286,7 +286,7 @@ if (Auth::isLoggedIn()) {
                 </form>
 
                 <div id="auth-status" class="auth-status" aria-live="polite"></div>
-                <a class="secondary-link" href="/public/index.php">Back to home</a>
+                <a class="secondary-link" href="/">Back to home</a>
             </div>
         </div>
     </div>
@@ -311,22 +311,24 @@ if (Auth::isLoggedIn()) {
         async function submitForm(mode, payload) {
             statusEl.textContent = 'Please wait...';
 
-            const response = await fetch(`/api/auth/${mode}.php`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            try {
+                const response = await fetch(`/api/auth/${mode}.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-            const data = await response.json();
-            if (response.ok && data.success) {
-                statusEl.textContent = mode === 'login' ? 'Login successful. Redirecting...' : 'Account created successfully. Redirecting...';
-                setTimeout(() => {
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    statusEl.textContent = mode === 'login' ? 'Login successful. Redirecting...' : 'Account created successfully. Redirecting...';
                     window.location.href = '/public/dashboard.php';
-                }, 700);
-                return;
-            }
+                    return;
+                }
 
-            statusEl.textContent = data.error || 'Something went wrong.';
+                statusEl.textContent = data.error || 'Something went wrong.';
+            } catch (error) {
+                statusEl.textContent = 'Unable to reach the server. Please try again.';
+            }
         }
 
         forms.login.addEventListener('submit', async (event) => {

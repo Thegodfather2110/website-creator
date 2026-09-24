@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../api/init.php';
+require_once __DIR__ . "/../app/bootstrap.php";
 use App\Core\Auth;
 
 if (!Auth::isLoggedIn()) {

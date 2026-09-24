@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../api/init.php';
+require_once __DIR__ . "/../app/bootstrap.php";
 use App\Core\Auth;
 
 if (!Auth::isLoggedIn()) {
@@ -99,7 +99,7 @@ if (!Auth::isLoggedIn()) {
                 <a href="#insights">Insights</a>
             </nav>
             <div class="toolbar">
-                <a class="button" href="/public/index.php">Home</a>
+                <a class="button" href="/">Home</a>
                 <a class="button" href="/public/page-manager.php">Pages</a>
                 <a class="button primary" href="/public/editor.php?id=1">New project</a>
             </div>
