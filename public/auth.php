@@ -275,6 +275,10 @@ if (Auth::isLoggedIn()) {
 
                 <form id="register-form" class="auth-form" method="post">
                     <div class="field">
+                        <label for="register-username">Username</label>
+                        <input id="register-username" name="username" type="text" required placeholder="Choose a username">
+                    </div>
+                    <div class="field">
                         <label for="register-email">Email</label>
                         <input id="register-email" name="email" type="email" required placeholder="you@example.com">
                     </div>
@@ -342,6 +346,7 @@ if (Auth::isLoggedIn()) {
         forms.register.addEventListener('submit', async (event) => {
             event.preventDefault();
             await submitForm('register', {
+                username: document.getElementById('register-username').value.trim(),
                 email: document.getElementById('register-email').value.trim(),
                 password: document.getElementById('register-password').value
             });

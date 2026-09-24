@@ -19,7 +19,14 @@ class Database {
             $config = require __DIR__ . '/../../config/config.php';
             $dbConfig = $config['db'];
 
-            $dsn = "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['dbname']};charset={$dbConfig['charset']}";
+            // Construct DSN ensuring values are treated as strings
+            $dsn = sprintf(
+                "mysql:host=%s;port=%s;dbname=%s;charset=%s",
+                (string)$dbConfig['host'],
+                (string)$dbConfig['port'],
+                (string)$dbConfig['dbname'],
+                (string)$dbConfig['charset']
+            );
             $options = [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

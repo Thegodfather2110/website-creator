@@ -28,13 +28,20 @@ class Auth {
         $stmt->execute([$identifier, $identifier]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password_hash'])) {
+        if (!$user) {
+            error_log("Login attempt failed: No user found for identifier: " . $identifier);
+            return false;
+        }
+
+        if (password_verify($password, $user['password_hash'])) {
             Session::regenerate();
             Session::set('user_id', $user['id']);
             Session::set('user_username', $user['username']);
             Session::set('user_email', $user['email']);
             return true;
         }
+
+        error_log("Login attempt failed: Password mismatch for user: " . $identifier);
         return false;
     }
 

@@ -6,15 +6,19 @@ use App\Services\ProjectService;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     ApiResponse::error('Method not allowed', 405);
+    exit;
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
-$username = $input['username'] ?? '';
-$email = $input['email'] ?? '';
+
+// Sanitization and basic validation
+$username = isset($input['username']) ? trim($input['username']) : '';
+$email = isset($input['email']) ? filter_var(trim($input['email']), FILTER_VALIDATE_EMAIL) : false;
 $password = $input['password'] ?? '';
 
-if (empty($username) || empty($email) || empty($password)) {
-    ApiResponse::error('Username, email, and password are required', 400);
+if (empty($username) || !$email || empty($password)) {
+    ApiResponse::error('A valid username, email, and password are required', 400);
+    exit;
 }
 
 try {
@@ -28,8 +32,10 @@ try {
             'redirect' => '/public/editor.php?id=' . $projectId
         ], 201);
     } else {
-        ApiResponse::error('Registration failed');
+        ApiResponse::error('Registration failed', 400);
+        exit;
     }
 } catch (\Exception $e) {
     ApiResponse::error('Server error: ' . $e->getMessage(), 500);
+    exit;
 }
