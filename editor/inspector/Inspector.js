@@ -1,5 +1,5 @@
 // Inspector.js - Inspector panel with Breakpoint support and Command Integration
-import { DesignTokens } from '../Tokens.js';
+adimport { DesignTokens } from '../js/Tokens.js';
 
 export class Inspector {
     constructor(container, tree, onNodeUpdateCallback) {

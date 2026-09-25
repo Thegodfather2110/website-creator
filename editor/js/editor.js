@@ -95,8 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadPage = async () => {
         try {
+            console.log('Loading page with ID:', currentPageId);
             const response = await fetch(`/api/pages/load.php?id=${currentPageId}`);
             const result = await response.json();
+
+            console.log('API Load result:', result);
 
             if (!response.ok || !result.success) {
                 console.log('No saved page found, using default data');

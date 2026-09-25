@@ -11,31 +11,43 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = json_decode(file_get_contents('php://input'), true);
 
+if (!is_array($input)) {
+    ApiResponse::error('Invalid JSON request body', 400);
+}
+
 // Sanitization and basic validation
-$username = isset($input['username']) ? trim($input['username']) : '';
-$email = isset($input['email']) ? filter_var(trim($input['email']), FILTER_VALIDATE_EMAIL) : false;
-$password = $input['password'] ?? '';
+$username = trim((string) ($input['username'] ?? ''));
+$emailInput = trim((string) ($input['email'] ?? ''));
+$email = filter_var($emailInput, FILTER_VALIDATE_EMAIL);
+$password = (string) ($input['password'] ?? '');
 
 if (empty($username) || !$email || empty($password)) {
     ApiResponse::error('A valid username, email, and password are required', 400);
-    exit;
+}
+
+if (strlen($username) > 50) {
+    ApiResponse::error('Username must be 50 characters or fewer', 400);
+}
+
+if (strlen($password) < 8) {
+    ApiResponse::error('Password must be at least 8 characters', 400);
 }
 
 try {
-    $userId = Auth::register($username, $email, $password);
+    $userId = Auth::register($username, (string) $email, $password);
 
     if ($userId !== false) {
-        // Successful registration, create workspace
-        $projectId = ProjectService::createProject($userId, 'My First Website');
+        $workspace = ProjectService::createDefaultProject($userId, 'My First Website');
         ApiResponse::success([
             'message' => 'User registered and project created',
-            'redirect' => '/public/editor.php?id=' . $projectId
+            'user_id' => $userId,
+            'project_id' => $workspace['project_id'],
+            'page_id' => $workspace['page_id'],
+            'redirect' => '/public/editor.php?id=' . $workspace['page_id']
         ], 201);
     } else {
         ApiResponse::error('Registration failed', 400);
-        exit;
     }
 } catch (\Exception $e) {
     ApiResponse::error('Server error: ' . $e->getMessage(), 500);
-    exit;
 }
