@@ -3,6 +3,7 @@ import { NodeTree } from './NodeTree.js';
 import { Inspector } from '../inspector/Inspector.js';
 import { HistoryManager } from '../history/HistoryManager.js';
 import { UpdateNodeCommand } from '../history/commands/UpdateNodeCommand.js';
+import { DeleteNodeCommand } from '../history/commands/DeleteNodeCommand.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('canvas');
@@ -144,8 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCurrent();
         }
 
-        if (action === 'publish') {
-            alert('Publishing functionality is under development.');
+        if (action === 'save') {
+           await savePage();
+           alert('Page saved!');
         }
     });
 
@@ -153,6 +155,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const nodeId = event.target.dataset.id;
         if (nodeId) {
             inspector.selectNode(nodeId);
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.key === 'Delete' || e.key === 'Backspace') && inspector.selectedId) {
+            const command = new DeleteNodeCommand(tree, inspector.selectedId);
+            history.execute(command);
+            inspector.selectedId = null;
+            inspector.render();
+            renderCurrent();
         }
     });
 

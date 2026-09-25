@@ -18,7 +18,7 @@ export class DeleteNodeCommand extends Command {
             this.deletedNode = result.node;
             this.parentId = result.parentId;
             this.index = result.index;
-            this.tree.removeNode(this.nodeId);
+            this.tree.deleteNode(this.nodeId);
         }
     }
 
