@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(curl -v \"http://localhost:8000/api/pages/load.php?id=1\")"
+      "Bash(curl -v \"http://localhost:8000/api/pages/load.php?id=1\")",
+      "Bash(mkdir -p editor/js/components/types *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\MY PC\\god\\creations\\website creator\\editor\\js\\components"
     ]
   }
 }

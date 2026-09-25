@@ -82,3 +82,45 @@ CREATE TABLE `published_builds` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;
+ALTER TABLE `users` ADD COLUMN `username` VARCHAR(50) NOT NULL AFTER `id`, ADD UNIQUE KEY `username` (`username`);
+-- Collaboration Features
+CREATE TABLE `project_members` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `project_id` INT(11) NOT NULL,
+  `user_id` INT(11) NOT NULL,
+  `role` VARCHAR(50) DEFAULT 'viewer',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE `comments` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `page_id` INT(11) NOT NULL,
+  `node_id` VARCHAR(255) NOT NULL,
+  `user_id` INT(11) NOT NULL,
+  `content` TEXT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`page_id`) REFERENCES `pages`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
+-- Add Form Submissions Table
+CREATE TABLE `form_submissions` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `page_id` INT(11) NOT NULL,
+  `data_json` LONGTEXT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`page_id`) REFERENCES `pages`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- Add Templates Table
+CREATE TABLE `templates` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT,
+  `thumbnail_path` VARCHAR(512),
+  `document_json` LONGTEXT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

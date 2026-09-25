@@ -1,5 +1,6 @@
-// Canvas.js - Visual rendering with Responsive support
+// CanvasRenderer.js - Visual rendering with Registry-based constraints
 import { getResponsiveStyle } from '../js/Responsive.js';
+import { ComponentRegistry } from '../js/components/ComponentRegistry.js';
 
 export class CanvasRenderer {
     constructor(canvasElement) {
@@ -17,8 +18,11 @@ export class CanvasRenderer {
     }
 
     _createNodeElement(node, activeBreakpoint) {
-        const el = document.createElement(node.tagName || 'div');
+        // Use Registry to get component definition
+        const componentDef = ComponentRegistry.get(node.type || 'container');
+        const el = document.createElement(node.tagName || componentDef.tagName || 'div');
         el.dataset.id = node.id;
+        el.dataset.type = node.type || 'container';
 
         // Apply styles based on active breakpoint + inheritance
         const styles = node.styles ? getResponsiveStyle(node.styles, activeBreakpoint) : {};
@@ -26,13 +30,17 @@ export class CanvasRenderer {
             Object.assign(el.style, styles);
         }
 
-        if (node.content) {
-            el.textContent = node.content;
-        }
+        // Handle component-specific attributes
+        if (node.tagName === 'img' && node.src) el.src = node.src;
+        if (node.content) el.textContent = node.content;
 
+        // Recursive render children if allowed
         if (node.children) {
             node.children.forEach(child => {
-                el.appendChild(this._createNodeElement(child, activeBreakpoint));
+                // Constraint Check: can the current node accept this child type?
+                if (ComponentRegistry.canAcceptChild(node.type || 'container', child.type || 'container')) {
+                    el.appendChild(this._createNodeElement(child, activeBreakpoint));
+                }
             });
         }
         return el;
