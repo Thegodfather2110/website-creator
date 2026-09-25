@@ -46,7 +46,11 @@ class Auth {
     }
 
     public static function isLoggedIn(): bool {
-        return Session::get('user_id') !== null;
+        return self::getUserId() !== null;
+    }
+
+    public static function getUserId(): ?int {
+        return Session::get('user_id');
     }
 
     public static function logout(): void {

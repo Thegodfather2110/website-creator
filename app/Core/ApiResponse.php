@@ -9,11 +9,21 @@ class ApiResponse {
         exit;
     }
 
-    public static function error(string $message, int $statusCode = 400): void {
-        self::send(['error' => $message], $statusCode);
+    public static function error(string $message, int $statusCode = 400, string $code = 'ERROR'): void {
+        self::send([
+            'success' => false,
+            'error' => [
+                'code' => $code,
+                'message' => $message
+            ]
+        ], $statusCode);
     }
 
-    public static function success(mixed $data = null, int $statusCode = 200): void {
-        self::send(['success' => true, 'data' => $data], $statusCode);
+    public static function success(mixed $data = null, string $message = 'Operation successful', int $statusCode = 200): void {
+        self::send([
+            'success' => true,
+            'data' => $data,
+            'message' => $message
+        ], $statusCode);
     }
 }

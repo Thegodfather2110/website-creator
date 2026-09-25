@@ -27,10 +27,21 @@ if (!$pageId || $documentJson === null) {
 try {
     $db = Database::getConnection();
     $encoded = is_string($documentJson) ? $documentJson : json_encode($documentJson);
-    $stmt = $db->prepare("UPDATE pages SET document_json = ?, updated_at = NOW() WHERE id = ?");
 
-    if ($stmt->execute([$encoded, (int)$pageId])) {
-        ApiResponse::success(['message' => 'Page saved successfully', 'id' => (int)$pageId]);
+    // Enforce ownership: page must belong to a project owned by the current user
+    $stmt = $db->prepare("
+        UPDATE pages p
+        JOIN projects pr ON pr.id = p.project_id
+        SET p.document_json = ?, p.updated_at = NOW()
+        WHERE p.id = ? AND pr.user_id = ?
+    ");
+
+    if ($stmt->execute([$encoded, (int)$pageId, Auth::getUserId()])) {
+        if ($stmt->rowCount() > 0) {
+            ApiResponse::success(['message' => 'Page saved successfully', 'id' => (int)$pageId]);
+        } else {
+            ApiResponse::error('Page not found or unauthorized', 404);
+        }
     } else {
         ApiResponse::error('Failed to save page');
     }

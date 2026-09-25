@@ -1,6 +1,5 @@
 <?php
 // app/bootstrap.php - Master application bootstrap
-// Autoloader and core service initialization
 
 // 1. Load Configuration
 $config = require __DIR__ . '/../config/config.php';
@@ -18,8 +17,19 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// 3. URL Helper
+// 3. URL/Base Path Helper (Section 47)
 function url(string $path = ''): string {
-    // Assuming project root is absolute, can be updated via ENV variable later
-    return '/' . ltrim($path, '/');
+    global $config;
+    // Using base_url from config, fallback to '/'
+    $baseUrl = $config['app']['base_url'] ?? '/';
+    return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+}
+
+function apiUrl(string $path = ''): string {
+    return url('/api/' . ltrim($path, '/'));
+}
+
+// 4. Session Initialization (Centralized - Section 23/Section 55)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }

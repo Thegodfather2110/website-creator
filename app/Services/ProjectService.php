@@ -4,23 +4,25 @@ namespace App\Services;
 use App\Core\Database;
 
 class ProjectService {
-    public static function createDefaultProject(int $userId, string $name): array {
+    public static function createProject(int $userId, string $name): int {
         $db = Database::getConnection();
         $slug = strtolower(str_replace(' ', '-', $name)) . '-' . time();
 
-        // 1. Create Project
         $stmt = $db->prepare("INSERT INTO projects (user_id, name, slug) VALUES (?, ?, ?)");
         $stmt->execute([$userId, $name, $slug]);
         $projectId = (int)$db->lastInsertId();
 
-        // 2. Create Default 'Home' Page
+        // Create default page
         $stmtPage = $db->prepare("INSERT INTO pages (project_id, name, slug, document_json) VALUES (?, ?, ?, ?)");
         $stmtPage->execute([$projectId, 'Home', '/', json_encode(['pages' => [['id' => 'page_home', 'root' => []]]])]);
-        $pageId = (int)$db->lastInsertId();
 
-        return [
-            'project_id' => $projectId,
-            'page_id' => $pageId
-        ];
+        return $projectId;
+    }
+
+    public static function isUserOwner(int $userId, int $projectId): bool {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT id FROM projects WHERE id = ? AND user_id = ?");
+        $stmt->execute([$projectId, $userId]);
+        return (bool)$stmt->fetch();
     }
 }

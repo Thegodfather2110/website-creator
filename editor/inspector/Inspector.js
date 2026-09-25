@@ -1,5 +1,5 @@
 // Inspector.js - Inspector panel with Breakpoint support and Command Integration
-adimport { DesignTokens } from '../js/Tokens.js';
+import { DesignTokens } from '../js/Tokens.js';
 
 export class Inspector {
     constructor(container, tree, onNodeUpdateCallback) {
@@ -27,6 +27,11 @@ export class Inspector {
         }
 
         const node = this.tree.findNode(this.selectedId);
+        if (!node) {
+            this.container.innerHTML = '<p>Error: Node not found</p>';
+            return;
+        }
+
         // Ensure styles has a breakpoint object
         node.styles = node.styles || { desktop: {}, tablet: {}, mobile: {} };
         const styles = node.styles[this.activeBreakpoint] || {};

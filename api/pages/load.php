@@ -1,11 +1,16 @@
 <?php
 require_once __DIR__ . '/../../api/init.php';
 use App\Core\ApiResponse;
+use App\Core\Auth;
 use App\Core\Database;
 use PDO;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     ApiResponse::error('Method not allowed', 405);
+}
+
+if (!Auth::isLoggedIn()) {
+    ApiResponse::error('Unauthorized', 401);
 }
 
 $pageId = $_GET['id'] ?? null;
@@ -15,12 +20,18 @@ if (!$pageId) {
 
 try {
     $db = Database::getConnection();
-    $stmt = $db->prepare("SELECT * FROM pages WHERE id = ?");
-    $stmt->execute([(int)$pageId]);
+    // Validate ownership: page must belong to a project owned by the current user
+    $stmt = $db->prepare("
+        SELECT p.*
+        FROM pages p
+        JOIN projects pr ON p.project_id = pr.id
+        WHERE p.id = ? AND pr.user_id = ?
+    ");
+    $stmt->execute([(int)$pageId, (int)Auth::getUserId()]);
     $page = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$page) {
-        ApiResponse::error('Page not found', 404);
+        ApiResponse::error('Page not found or unauthorized', 404);
     }
 
     if (!empty($page['document_json'])) {

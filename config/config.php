@@ -2,6 +2,9 @@
 // Configuration settings for the Website Creator Engine
 
 return [
+    'app' => [
+        'base_url' => getenv('WEBSITE_BASE_URL') ?: '/',
+    ],
     'db' => [
         'host' => getenv('WEBSITE_DB_HOST') ?: '127.0.0.1',
         'port' => getenv('WEBSITE_DB_PORT') ?: '3306',
@@ -10,5 +13,4 @@ return [
         'pass' => getenv('WEBSITE_DB_PASS') ?: '',
         'charset' => 'utf8mb4',
     ],
-    // Add future configurations here (e.g., mailer, API keys)
 ];
