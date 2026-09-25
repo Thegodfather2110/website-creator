@@ -1,5 +1,6 @@
-// Inspector.js - Inspector panel with Component Registry and Schema integration
+// Inspector.js - Inspector panel with robust schema and token support
 import { ComponentRegistry } from './ComponentRegistry.js';
+import { DesignTokens } from '../js/Tokens.js';
 
 export class Inspector {
     constructor(container, tree, onNodeUpdateCallback) {
@@ -20,12 +21,6 @@ export class Inspector {
         this.render();
     }
 
-    _rgbToHex(rgb) {
-        if (!rgb) return '#000000';
-        if (rgb.startsWith('#')) return rgb;
-        return '#000000'; // Basic fallback
-    }
-
     render() {
         if (!this.selectedId) {
             this.container.innerHTML = '<p>Select a node to inspect</p>';
@@ -33,11 +28,6 @@ export class Inspector {
         }
 
         const node = this.tree.findNode(this.selectedId);
-        if (!node) {
-            this.container.innerHTML = '<p>Error: Node not found</p>';
-            return;
-        }
-
         const componentDef = ComponentRegistry.get(node.type || 'container');
         node.styles = node.styles || { desktop: {}, tablet: {}, mobile: {} };
         const styles = node.styles[this.activeBreakpoint] || {};
@@ -56,10 +46,20 @@ export class Inspector {
         Object.entries(componentDef.schema).forEach(([key, field]) => {
             const value = node[key] || styles[key] || '';
             controlsHtml += `<label>${field.label}:</label>`;
+
             if (field.type === 'color') {
-                controlsHtml += `<input type="color" value="${this._rgbToHex(value)}" id="field-${key}">`;
-            } else if (field.type === 'number') {
-                controlsHtml += `<input type="number" value="${value || '0'}" id="field-${key}">`;
+                controlsHtml += `<input type="color" value="${value || '#000000'}" id="field-${key}">`;
+            } else if (field.type === 'select') {
+                // If it's a token type, use token values
+                if (field.options && !Array.isArray(field.options)) {
+                   controlsHtml += `<select id="field-${key}">` +
+                       Object.entries(field.options).map(([k, v]) =>
+                           `<option value="${v}" ${value === v ? 'selected' : ''}>${k}</option>`).join('') +
+                       `</select>`;
+                } else {
+                   // Generic select
+                   controlsHtml += `<select id="field-${key}">...</select>`;
+                }
             } else {
                 controlsHtml += `<input type="text" value="${value || ''}" id="field-${key}">`;
             }
@@ -67,18 +67,19 @@ export class Inspector {
 
         this.container.innerHTML = controlsHtml + `<button id="save-node">Save</button>`;
 
-        document.getElementById('bp-select').addEventListener('change', (e) => this.setBreakpoint(e.target.value));
-
         document.getElementById('save-node').addEventListener('click', () => {
             const newProps = { styles: { ...node.styles } };
             const newStyles = { ...newProps.styles[this.activeBreakpoint] };
 
             Object.entries(componentDef.schema).forEach(([key, field]) => {
-                const val = document.getElementById(`field-${key}`).value;
+                const el = document.getElementById(`field-${key}`);
+                if (!el) return;
+
+                // Logic to separate content vs styles
                 if (['content', 'url', 'src', 'alt'].includes(key)) {
-                    newProps[key] = val;
+                    newProps[key] = el.value;
                 } else {
-                    newStyles[key] = val;
+                    newStyles[key] = el.value;
                 }
             });
 

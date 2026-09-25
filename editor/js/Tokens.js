@@ -1,9 +1,11 @@
-// Tokens.js - Design Tokens for the Styling Engine
+// Tokens.js - Full Design System Tokens (Section 11)
 export const DesignTokens = {
     colors: {
-        primary: "#00FF9D",
+        primary: "#67E8F9",
         background: "#0B0D10",
-        text: "#FFFFFF"
+        surface: "#101C2C",
+        text: "#EDF5FF",
+        muted: "#A4B7D3"
     },
     spacing: {
         xs: "4px",
@@ -16,5 +18,10 @@ export const DesignTokens = {
         sm: "6px",
         md: "12px",
         lg: "20px"
+    },
+    typography: {
+        fontFamily: "'Outfit', sans-serif",
+        heading: "700",
+        body: "400"
     }
 };

@@ -1,12 +1,14 @@
+import { DesignTokens } from '../Tokens.js';
+
 export const ComponentRegistry = {
     components: {
         'container': {
             tagName: 'div',
             allowedChildren: ['container', 'text', 'heading', 'image', 'button'],
             schema: {
-                padding: { type: 'text', label: 'Padding' },
+                padding: { type: 'token', label: 'Padding', options: DesignTokens.spacing },
                 backgroundColor: { type: 'color', label: 'Background Color' },
-                display: { type: 'select', label: 'Display' }
+                display: { type: 'select', label: 'Display', options: {'block': 'block', 'flex': 'flex'} }
             }
         },
         'text': {
@@ -14,7 +16,8 @@ export const ComponentRegistry = {
             allowedChildren: [],
             schema: {
                 content: { type: 'text', label: 'Text Content' },
-                fontSize: { type: 'text', label: 'Font Size' }
+                fontSize: { type: 'token', label: 'Font Size', options: DesignTokens.typography.fontSize },
+                color: { type: 'color', label: 'Text Color' }
             }
         },
         'heading': {
@@ -22,15 +25,7 @@ export const ComponentRegistry = {
             allowedChildren: [],
             schema: {
                 content: { type: 'text', label: 'Heading Text' },
-                level: { type: 'select', label: 'Level' }
-            }
-        },
-        'image': {
-            tagName: 'img',
-            allowedChildren: [],
-            schema: {
-                src: { type: 'text', label: 'Source URL' },
-                alt: { type: 'text', label: 'Alt Text' }
+                fontSize: { type: 'token', label: 'Size', options: DesignTokens.typography.fontSize }
             }
         },
         'button': {
@@ -38,15 +33,8 @@ export const ComponentRegistry = {
             allowedChildren: [],
             schema: {
                 content: { type: 'text', label: 'Button Text' },
-                url: { type: 'text', label: 'URL' }
-            }
-        },
-        'grid': {
-            tagName: 'div',
-            allowedChildren: ['container'],
-            schema: {
-                columns: { type: 'number', label: 'Columns' },
-                gap: { type: 'text', label: 'Gap' }
+                url: { type: 'text', label: 'URL' },
+                borderRadius: { type: 'token', label: 'Border Radius', options: DesignTokens.radius }
             }
         }
     },

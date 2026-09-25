@@ -12,15 +12,33 @@ class PublishingService {
         if (!$document) throw new \Exception("Invalid document JSON");
 
         // Compile styles and nodes
-        $styles = self::compileStyles($document['pages'][0] ?? []);
+        $cssArray = ['desktop' => '', 'tablet' => '', 'mobile' => ''];
+        self::compileStylesRecursive($document['pages'][0]['root'] ?? [], $cssArray);
+
+        $styles = $cssArray['desktop'] . "\n";
+        if ($cssArray['tablet']) $styles .= "@media (max-width: 768px) { \n" . $cssArray['tablet'] . "}\n";
+        if ($cssArray['mobile']) $styles .= "@media (max-width: 375px) { \n" . $cssArray['mobile'] . "}\n";
+
         $content = self::compileNodes($document['pages'][0]['root'] ?? []);
 
-        return "<!DOCTYPE html><html><head><style>{$styles}</style></head><body>{$content}</body></html>";
+        return "<!DOCTYPE html><html><head><style>{$styles} body { margin: 0; font-family: sans-serif; }</style></head><body>{$content}</body></html>";
     }
 
-    private static function compileStyles(array $page): string {
-        // Basic style extraction from root node or global styles
-        return "body { margin: 0; font-family: sans-serif; } .node { border: 1px solid transparent; }";
+    private static function compileStylesRecursive(array $nodes, array &$cssArr): void {
+        foreach ($nodes as $node) {
+            $id = $node['id'] ?? '';
+            $styles = $node['styles'] ?? [];
+
+            foreach (['desktop', 'tablet', 'mobile'] as $bp) {
+                if (!empty($styles[$bp])) {
+                    $cssArr[$bp] .= "#{$id} { " . self::styleArrayToCss($styles[$bp]) . " }\n";
+                }
+            }
+
+            if (!empty($node['children'])) {
+                self::compileStylesRecursive($node['children'], $cssArr);
+            }
+        }
     }
 
     private static function compileNodes(array $nodes): string {
@@ -30,24 +48,21 @@ class PublishingService {
             $id = $node['id'] ?? '';
             $content = $node['content'] ?? '';
 
-            // Build style string
-            $styleStr = "";
-            if (!empty($node['styles'])) {
-                $styles = is_array($node['styles']) ? $node['styles'] : [];
-                foreach ($styles as $prop => $value) {
-                    // Simple property to CSS mapping
-                    $cssProp = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $prop));
-                    $styleStr .= "{$cssProp}: {$value};";
-                }
-            }
-
-            $html .= "<{$tag} id='{$id}' style='{$styleStr}'>{$content}";
-            // Recursive children
+            $html .= "<{$tag} id='{$id}'>{$content}";
             if (!empty($node['children'])) {
                 $html .= self::compileNodes($node['children']);
             }
             $html .= "</{$tag}>";
         }
         return $html;
+    }
+
+    private static function styleArrayToCss(array $styles): string {
+        $css = "";
+        foreach ($styles as $prop => $value) {
+            $cssProp = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $prop));
+            $css .= "{$cssProp}: {$value};";
+        }
+        return $css;
     }
 }
